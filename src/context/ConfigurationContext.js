@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { TemplateService } from '../services/templateService';
 
 export const ConfigurationContext = createContext();
 
@@ -6,6 +7,7 @@ export function ConfigurationProvider({ children, companyId, templateId }) {
     const [template, setTemplate] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const templateService = new TemplateService(companyId);
 
     useEffect(() => {
         const loadTemplate = async () => {
@@ -16,28 +18,7 @@ export function ConfigurationProvider({ children, companyId, templateId }) {
                     apiKey: process.env.REACT_APP_API_KEY ? 'Present' : 'Missing'
                 });
 
-                // Using the proxied API endpoint
-                const response = await fetch(`/api/templates/${templateId}?companyId=${companyId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${process.env.REACT_APP_API_KEY}`,
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('API Response:', {
-                        status: response.status,
-                        statusText: response.statusText,
-                        headers: Object.fromEntries(response.headers.entries()),
-                        body: errorText
-                    });
-                    throw new Error(`Failed to load template: ${response.status} ${response.statusText}`);
-                }
-                
-                const data = await response.json();
+                const data = await templateService.loadTemplate(templateId);
                 console.log('Template loaded successfully:', data);
                 setTemplate(data);
                 setLoading(false);

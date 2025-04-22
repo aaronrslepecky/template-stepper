@@ -7,13 +7,41 @@ module.exports = function(app) {
       target: 'https://api.tigerpistol.com',
       changeOrigin: true,
       pathRewrite: {
-        '^/api': '', // Remove /api prefix when forwarding to target
+        '^/api': '/v2', // Rewrite /api to /v2 to match the actual API structure
       },
-      onProxyRes: function(proxyRes, req, res) {
-        // Add CORS headers to the proxied response
-        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-        proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
-        proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization';
+      onProxyReq: (proxyReq, req) => {
+        // Add required headers
+        proxyReq.setHeader('accept', 'application/json, text/plain, */*');
+        proxyReq.setHeader('culture', 'en-US');
+        proxyReq.setHeader('cache-control', 'no-cache');
+        proxyReq.setHeader('pragma', 'no-cache');
+        
+        // Log outgoing request
+        console.log('Proxying request:', {
+          method: req.method,
+          path: req.path,
+          targetUrl: proxyReq.path,
+          headers: proxyReq.getHeaders()
+        });
+      },
+      onProxyRes: (proxyRes, req) => {
+        // Log proxy response
+        console.log('Proxy response:', {
+          method: req.method,
+          path: req.path,
+          status: proxyRes.statusCode,
+          headers: proxyRes.headers,
+          targetUrl: req.path
+        });
+      },
+      onError: (err, req, res) => {
+        console.error('Proxy error:', {
+          error: err,
+          method: req.method,
+          path: req.path,
+          targetUrl: req.path
+        });
+        res.status(500).send('Proxy Error');
       }
     })
   );

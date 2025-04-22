@@ -16,8 +16,8 @@ function StepperContent() {
     return <div>Error loading template: {error}</div>;
   }
 
-  if (!template) {
-    return <div>No template loaded</div>;
+  if (!template || !template.steps || !Array.isArray(template.steps)) {
+    return <div>No valid template data available</div>;
   }
 
   return (
