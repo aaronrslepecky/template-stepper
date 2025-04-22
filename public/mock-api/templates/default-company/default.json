@@ -1,0 +1,44 @@
+{
+  "id": "default",
+  "name": "Default Template",
+  "companyId": "default-company",
+  "steps": [
+    {
+      "stepNumber": 1,
+      "title": "Basic Information",
+      "decorator": "Enter your basic information",
+      "type": "standard",
+      "content": "<div class='step-content'><form><div class='form-group'><label>Name</label><input type='text' placeholder='Enter your name' /></div><div class='form-group'><label>Email</label><input type='email' placeholder='Enter your email' /></div></form></div>",
+      "validation": {
+        "required": ["name", "email"]
+      }
+    },
+    {
+      "stepNumber": 2,
+      "title": "Company Details",
+      "decorator": "Enter company information",
+      "type": "standard",
+      "content": "<div class='step-content'><form><div class='form-group'><label>Company Name</label><input type='text' placeholder='Enter company name' /></div><div class='form-group'><label>Industry</label><select><option>Select Industry</option><option>Technology</option><option>Healthcare</option><option>Finance</option></select></div></form></div>",
+      "validation": {
+        "required": ["companyName"]
+      }
+    },
+    {
+      "stepNumber": 3,
+      "title": "Review",
+      "decorator": "Review your information",
+      "type": "dependent",
+      "dependencies": [
+        {
+          "field": "name",
+          "value": "*"
+        },
+        {
+          "field": "companyName",
+          "value": "*"
+        }
+      ],
+      "content": "<div class='step-content'><h3>Please review your information</h3><div id='review-content'></div><button class='submit-button'>Submit</button></div>"
+    }
+  ]
+} 
